@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class Customer : MonoBehaviour
 {
-    private bool hasOrdered = false;
+    private State state = State.HasNotOrdered;
 
     private float movespeed = 1.0f;
 
     private float distanceThreshold = 0.7f;
+
+    private GameObject gameDirector;
 
     private GameObject table;
 
@@ -16,12 +18,13 @@ public class Customer : MonoBehaviour
 
     private GameObject ellipses;
 
-    // Start is called before the first frame update
     void Start()
     {
         var tables = GameObject.Find("Tables");
         var rnd = Random.Range(0, tables.transform.childCount);
         table = tables.transform.GetChild(rnd).gameObject;
+
+        gameDirector = GameObject.Find("Game Director");
 
         baloon = transform.Find("Recipe Order").gameObject;
         baloon.SetActive(false);
@@ -30,7 +33,6 @@ public class Customer : MonoBehaviour
         ellipses.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
         var distance = (table.transform.position - transform.position).magnitude;
@@ -41,10 +43,28 @@ public class Customer : MonoBehaviour
                 table.transform.position,
                 movespeed * Time.deltaTime);
         }
-        else if (!hasOrdered)
+        else if (state == State.HasNotOrdered)
         {
-            hasOrdered = true;
+            state = State.Ordered;
             baloon.SetActive(true);
         }
+
+        if (state == State.Received)
+        {
+            baloon.SetActive(false);
+            ellipses.SetActive(false);
+        }
+    }
+
+    public void ReceiveOrder()
+    {
+        state = State.Received;
+        gameDirector.GetComponent<GameDirector>().CreateMoney()
+    }
+
+    private enum State {
+        HasNotOrdered,
+        Ordered,
+        Received
     }
 }

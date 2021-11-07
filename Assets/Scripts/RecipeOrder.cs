@@ -6,6 +6,8 @@ public class RecipeOrder : MonoBehaviour
 {
     private bool ordering = false;
 
+    private Customer customer;
+
     private GameDirector gameDirector;
 
     private GameObject ellipses;
@@ -21,6 +23,7 @@ public class RecipeOrder : MonoBehaviour
     void Start()
     {
         gameDirector = GameObject.Find("Game Director").GetComponent<GameDirector>();
+        customer = transform.parent.gameObject.GetComponent<Customer>();
         ellipses = transform.parent.Find("Ellipses").gameObject;
 
         var recipes = gameDirector.GetAvailableRecipes();
@@ -57,7 +60,7 @@ public class RecipeOrder : MonoBehaviour
     void OnMouseUpAsButton()
     {
         ordering = true;
-        gameDirector.EnqueueRecipeOrder(gameObject, recipeType);
+        gameDirector.EnqueueRecipeOrder(customer, recipeType);
         ellipses.SetActive(true);
     }
 }

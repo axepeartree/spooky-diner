@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,12 @@ public class GameDirector : MonoBehaviour
 
     private Vector3 kitchenPosition;
 
+    private List<Oven> ovens;
+
+    private List<EnqueuedRecipeOrder> orderQueue;
+
+    public GameObject moneyPrefab;
+
     void Start()
     {
         uiManager = transform.Find("UI").gameObject.GetComponent<UIManager>();
@@ -24,7 +31,42 @@ public class GameDirector : MonoBehaviour
         kitchenPosition = transform.Find("Helpers").Find("Kitchen Position").transform.position;
         mainCamera = Camera.main;
 
+        var ovensGameObj = transform.Find("Interactives").Find("Ovens").gameObject;
+        ovens = new List<Oven>();
+        foreach (Transform child in ovensGameObj.transform)
+            ovens.Add(child.gameObject.GetComponent<Oven>());
+        orderQueue = new List<EnqueuedRecipeOrder>();
+
         MoveToRestaurant();
+    }
+
+    void Update()
+    {
+        PushEnqueuedOrders();
+    }
+
+    public void PushEnqueuedOrders()
+    {
+        if (orderQueue.Count == 0)
+            return;
+
+        foreach (var oven in ovens.Where(o => o.free).OrderByDescending(o => o.speed))
+        {
+            var order = orderQueue[0];
+            orderQueue.RemoveAt(0);
+            StartCoroutine(oven.CookOrder(this, order));
+        }
+    }
+
+    public void EnqueueRecipeOrder(Customer customer, RecipeType recipeType)
+    {
+        Debug.Log($"An order was placed for {recipeType}");
+        orderQueue.Add(new EnqueuedRecipeOrder
+        {
+            customer = customer,
+            recipeType = recipeType,
+            reward = 100
+        });
     }
 
     public void AddMoney(int money)
@@ -54,11 +96,6 @@ public class GameDirector : MonoBehaviour
         uiManager.MoveToLocation(location);
     }
 
-    public void EnqueueRecipeOrder(GameObject customer, RecipeType recipeType)
-    {
-        Debug.Log($"An order was placed for {recipeType}");
-    }
-
     public RecipeType[] GetAvailableRecipes()
     {
         return new RecipeType[] {
@@ -67,7 +104,13 @@ public class GameDirector : MonoBehaviour
             RecipeType.Soup
         };
     }
+}
 
+public class EnqueuedRecipeOrder
+{
+    public Customer customer;
+    public RecipeType recipeType;
+    public int reward;
 }
 
 public enum GameLocation
