@@ -13,6 +13,12 @@ public class GameDirector : MonoBehaviour
 
     public PrefabFactory PrefabFactory;
 
+    public GameObject RestaurantCameraPosition;
+
+    public GameObject KitchenCameraPosition;
+
+    public GameObject MainCamera;
+
     void Start()
     {
         PlayerData.Reset();
@@ -34,6 +40,24 @@ public class GameDirector : MonoBehaviour
         Debug.Log($"Money added: {moneyAdded.Amount}.");
         PlayerData.Money += moneyAdded.Amount;
         Exchanges.MoneyUpdatedExchange.Dispatch(new MoneyUpdated(PlayerData.Money));
+    }
+
+    public void OnLocationChanged(GameEvent payload)
+    {
+        var locationChanged = (LocationChanged) payload;
+        switch(locationChanged.Location)
+        {
+            case Location.Restaurant:
+                MainCamera.transform.position =
+                    RestaurantCameraPosition.transform.position;
+                break;
+            case Location.Kitchen:
+                MainCamera.transform.position =
+                    KitchenCameraPosition.transform.position;
+                break;
+            default:
+                break;
+        }
     }
 
     void SpawnCustomer()

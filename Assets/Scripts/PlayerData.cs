@@ -6,7 +6,9 @@ using UnityEngine;
 public class PlayerData : ScriptableObject
 {
     public int Money;
+
     public List<CustomerType> PotentialCustomers;
+
     public List<RecipeType> PotentialRecipes;
 
     public void Reset()
