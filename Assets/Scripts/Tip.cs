@@ -1,35 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using Events;
+using EventSystem;
 using UnityEngine;
 
-public class MoneyDrop : MonoBehaviour
+public class Tip : MonoBehaviour
 {
-    public float movespeed = 15.0f;
+    public GameEventExchange MoneyAddedExchange;
 
-    public float fadeoutSpeed = 6.0f;
+    public GameObject fadeoutTarget;
+
+    public float Movespeed = 15.0f;
+
+    public float FadeoutSpeed = 6.0f;
 
     private bool isMoving = false;
 
-    private bool isCoroutineStarted = false;
-
     private bool clicked = false;
 
-    private GameDirector gameDirector;
-
-    private Vector3 moneyUiPosition;
+    private bool isCoroutineStarted = false;
 
     private SpriteRenderer spriteRenderer;
 
     void Start()
     {
-        var moneyUi = GameObject
-            .Find("UI")
-            .transform
-            .Find("Money")
-            .gameObject;
-        gameDirector = GameObject.Find("Game Director").GetComponent<GameDirector>();
-        moneyUiPosition = Camera.main.ScreenToWorldPoint(moneyUi.transform.position);
         spriteRenderer = GetComponent<SpriteRenderer>();
+        if (fadeoutTarget == null)
+            fadeoutTarget = gameObject;
     }
 
     void Update()
@@ -45,13 +42,13 @@ public class MoneyDrop : MonoBehaviour
             }
 
             // move object towards UI
-            var direction = (transform.position - moneyUiPosition).normalized;
-            var velocity = direction * movespeed * Time.deltaTime;
+            var direction = (transform.position - fadeoutTarget.transform.position).normalized;
+            var velocity = direction * Movespeed * Time.deltaTime;
             transform.position -= velocity;
 
             // make it transparent
             var renderColor = spriteRenderer.color;
-            var alpha = renderColor.a - renderColor.a * fadeoutSpeed * Time.deltaTime;
+            var alpha = renderColor.a - renderColor.a * FadeoutSpeed * Time.deltaTime;
             spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, alpha);
             StartCoroutine(SelfDestruct());
         }
@@ -61,7 +58,7 @@ public class MoneyDrop : MonoBehaviour
         if (!clicked)
         {
             isMoving = true;
-            gameDirector.AddMoney(100);
+            MoneyAddedExchange?.Dispatch(new MoneyAddedPayload(100));
         }
         clicked = true;
     }
