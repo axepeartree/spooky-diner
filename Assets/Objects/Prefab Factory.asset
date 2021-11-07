@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67d1f77d8e220dc4d8facf8a2722d652, type: 3}
+  m_Name: Prefab Factory
+  m_EditorClassIdentifier: 
+  Customers:
+  - Prefab: {fileID: 6036700794812453418, guid: cfe50a35aad520444a5f642bbca7f8bd, type: 3}
+    CustomerType: 0
+  Recipes:
+  - Prefab: {fileID: 683410075392723832, guid: fd536768a80db734b87f43ee2e54adeb, type: 3}
+    RecipeType: 0
+  - Prefab: {fileID: 6564347967305517300, guid: 735789123e5fbbf46b854c195bc89946, type: 3}
+    RecipeType: 1
+  - Prefab: {fileID: 1206673139839373326, guid: 1359a27d4a9a8b041be78d1bffdbe078, type: 3}
+    RecipeType: 2
+  Tables:
+  - Prefab: {fileID: 116409870086638384, guid: 3b2409dca9a47fb449340d628ecc6aad, type: 3}
+    TableType: 0
+  - Prefab: {fileID: 1427739014649733623, guid: f8ba520fc827dd14f9b621f4c9929572, type: 3}
+    TableType: 1

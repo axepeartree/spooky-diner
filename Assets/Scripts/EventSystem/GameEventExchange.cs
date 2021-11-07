@@ -11,7 +11,7 @@ namespace EventSystem
         private List<GameEventListener> listeners = 
                 new List<GameEventListener>();
 
-        public void Dispatch(GameEventPayload payload) =>
+        public void Dispatch(GameEvent payload) =>
             listeners.ForEach(l => l.OnEventRaised(payload));
 
         public void RegisterListener(GameEventListener listener) =>

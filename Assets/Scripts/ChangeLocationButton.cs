@@ -1,23 +1,23 @@
+using Commons;
 using Events;
 using EventSystem;
-using Types;
 using UnityEngine;
 
 public class ChangeLocationButton : MonoBehaviour
 {
-    public GameEventExchange LocationChangedExchange;
+    public Exchanges Exchanges;
 
     public GameObject Button;
 
     public Location TargetLocation;
 
     public void ChangeLocation() =>
-        LocationChangedExchange.Dispatch(
-            new LocationChangedPayload(TargetLocation));
+        Exchanges.LocationChangedExchange.Dispatch(
+            new LocationChanged(TargetLocation));
 
-    public void OnLocationChanged(GameEventPayload payload)
+    public void OnLocationChanged(GameEvent payload)
     {
-        var locationChanged = (LocationChangedPayload) payload;
+        var locationChanged = (LocationChanged) payload;
         Button.SetActive(locationChanged.Location != TargetLocation);
     }
 }

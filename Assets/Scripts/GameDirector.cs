@@ -1,26 +1,53 @@
+using Commons;
 using Events;
 using EventSystem;
-using Types;
 using UnityEngine;
 
 public class GameDirector : MonoBehaviour
 {
-    public GameEventExchange LocationChangedExchange;
+    public GameObject CustomerSpawnPoint;
 
-    public GameEventExchange MoneyUpdatedExchange;
+    public PlayerData PlayerData;
 
-    public int Money;
+    public Exchanges Exchanges;
+
+    public PrefabFactory PrefabFactory;
 
     void Start()
     {
-        LocationChangedExchange
-            .Dispatch(new LocationChangedPayload(Location.Restaurant));
+        PlayerData.Reset();
+        Exchanges.LocationChangedExchange
+            .Dispatch(new LocationChanged(Location.Restaurant));
+        Exchanges.MoneyUpdatedExchange
+            .Dispatch(new MoneyUpdated(PlayerData.Money));
+
+        if (CustomerSpawnPoint == null)
+            CustomerSpawnPoint = gameObject;
+
+        SpawnCustomer();
+        SpawnTable(transform.position);
     }
 
-    public void OnMoneyAdded(GameEventPayload payload)
+    public void OnMoneyAdded(GameEvent payload)
     {
-        var moneyAdded = payload as MoneyAddedPayload;
-        Money += moneyAdded.Amount;
-        MoneyUpdatedExchange.Dispatch(new MoneyUpdatedPayload(Money));
+        var moneyAdded = payload as MoneyAdded;
+        Debug.Log($"Money added: {moneyAdded.Amount}.");
+        PlayerData.Money += moneyAdded.Amount;
+        Exchanges.MoneyUpdatedExchange.Dispatch(new MoneyUpdated(PlayerData.Money));
+    }
+
+    void SpawnCustomer()
+    {
+        var customerType = PlayerData.PotentialCustomers[Random.Range(0, PlayerData.PotentialCustomers.Count)];
+        var prefab = PrefabFactory.Customers.Find(c => c.CustomerType == customerType);
+        GameObject customerObj = Instantiate(prefab.Prefab) as GameObject;
+        customerObj.transform.position = CustomerSpawnPoint.transform.position;
+    }
+
+    void SpawnTable(Vector3 position)
+    {
+        var prefab = PrefabFactory.Tables.Find(t => t.TableType == TableType.A);
+        GameObject tableObj = Instantiate(prefab.Prefab) as GameObject;
+        tableObj.transform.position = position;
     }
 }

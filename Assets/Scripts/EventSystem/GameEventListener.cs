@@ -7,12 +7,12 @@ namespace EventSystem
     {
         public GameEventExchange Exchange;
 
-        public UnityEvent<GameEventPayload> UnityEvent;
+        public UnityEvent<GameEvent> UnityEvent;
 
         private void OnEnable() => Exchange.RegisterListener(this);
 
         private void OnDisable() => Exchange.UnregisterListener(this);
 
-        public void OnEventRaised(GameEventPayload payload) => UnityEvent.Invoke(payload);
+        public void OnEventRaised(GameEvent payload) => UnityEvent.Invoke(payload);
     }
 }
