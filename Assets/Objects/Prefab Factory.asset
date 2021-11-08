@@ -27,3 +27,6 @@ MonoBehaviour:
     TableType: 0
   - Prefab: {fileID: 1427739014649733623, guid: f8ba520fc827dd14f9b621f4c9929572, type: 3}
     TableType: 1
+  Ovens:
+  - Prefab: {fileID: 6954137016408058182, guid: 0fa0d9c4e0d3fe0478ab3ef965bf6319, type: 3}
+    OvenType: 0

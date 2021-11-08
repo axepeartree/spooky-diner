@@ -31,13 +31,13 @@ public class GameDirector : MonoBehaviour
             CustomerSpawnPoint = gameObject;
 
         SpawnCustomer();
-        SpawnTable(transform.position);
+        SpawnTable(transform.position, TableType.A);
+        // SpawnOven(transform.position, OvenType.A);
     }
 
     public void OnMoneyAdded(GameEvent payload)
     {
         var moneyAdded = payload as MoneyAdded;
-        Debug.Log($"Money added: {moneyAdded.Amount}.");
         PlayerData.Money += moneyAdded.Amount;
         Exchanges.MoneyUpdatedExchange.Dispatch(new MoneyUpdated(PlayerData.Money));
     }
@@ -66,11 +66,20 @@ public class GameDirector : MonoBehaviour
         var prefab = PrefabFactory.Customers.Find(c => c.CustomerType == customerType);
         GameObject customerObj = Instantiate(prefab.Prefab) as GameObject;
         customerObj.transform.position = CustomerSpawnPoint.transform.position;
+        var customer = customerObj.GetComponent<Customer>();
+        customer.ExitPoint = CustomerSpawnPoint.transform.position;
     }
 
-    void SpawnTable(Vector3 position)
+    void SpawnTable(Vector3 position, TableType tableType)
     {
-        var prefab = PrefabFactory.Tables.Find(t => t.TableType == TableType.A);
+        var prefab = PrefabFactory.Tables.Find(t => t.TableType == tableType);
+        GameObject tableObj = Instantiate(prefab.Prefab) as GameObject;
+        tableObj.transform.position = position;
+    }
+
+    void SpawnOven(Vector3 position, OvenType ovenType)
+    {
+        var prefab = PrefabFactory.Ovens.Find(t => t.OvenType == OvenType.A);
         GameObject tableObj = Instantiate(prefab.Prefab) as GameObject;
         tableObj.transform.position = position;
     }

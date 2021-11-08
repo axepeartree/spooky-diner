@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Events;
@@ -8,11 +9,11 @@ public class Tip : MonoBehaviour
 {
     public Exchanges Exchanges;
 
-    public GameObject FadeoutTarget;
-
     public float Movespeed = 15.0f;
 
     public float FadeoutSpeed = 6.0f;
+
+    private GameObject FadeoutTarget;
 
     private bool isClicked = false;
 
@@ -23,6 +24,7 @@ public class Tip : MonoBehaviour
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        FadeoutTarget = GameObject.FindGameObjectsWithTag("Tip Target").FirstOrDefault();
         if (FadeoutTarget == null)
             FadeoutTarget = gameObject;
     }

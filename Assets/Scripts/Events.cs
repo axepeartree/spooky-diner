@@ -39,5 +39,7 @@ namespace Events
 
     public class OrderRegistered : GameEvent
     {
+        Customer Customer;
+        RecipeType RecipeType;
     }
 }

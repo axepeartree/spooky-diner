@@ -8,13 +8,21 @@ public class Customer : MonoBehaviour
 
     public PrefabFactory PrefabFactory;
 
+    public GameObject TipSpawnPoint;
+
+    public Vector3 ExitPoint;
+
     public float maxDistanceThreshold = 0.1f;
 
     public float movespeed = 2.0f;
 
-    private CustomerState CustomerState;
+    private CustomerState customerState;
+
+    private RecipeType recipeType;
 
     private GameObject popUp;
+
+    private GameObject ellipses;
 
     private Vector3? target;
 
@@ -22,10 +30,13 @@ public class Customer : MonoBehaviour
     {
         popUp = transform.Find("Pop Up").gameObject;
         popUp.SetActive(false);
-        CustomerState = CustomerState.Moving;
+        customerState = CustomerState.Moving;
+
+        ellipses = transform.Find("Ellipses").gameObject;
+        ellipses.SetActive(false);
 
         // select random recipe
-        var recipeType = PlayerData.PotentialRecipes[Random.Range(0, PlayerData.PotentialRecipes.Count)];
+        recipeType = PlayerData.PotentialRecipes[Random.Range(0, PlayerData.PotentialRecipes.Count)];
         var recipe = PrefabFactory.Recipes.Find(t => t.RecipeType == recipeType);
         GameObject recipeObj = Instantiate(recipe.Prefab) as GameObject;
         recipeObj.transform.position = popUp.transform.position;
@@ -36,7 +47,7 @@ public class Customer : MonoBehaviour
     {
         UpdateTarget();
 
-        switch (CustomerState)
+        switch (customerState)
         {
             case CustomerState.Moving:
                 if (target == null)
@@ -51,15 +62,28 @@ public class Customer : MonoBehaviour
                 }
                 else
                 {
-                    CustomerState = CustomerState.Ordering;
+                    customerState = CustomerState.Ordering;
+                    popUp.SetActive(true);
                 }
                 break;
-            case CustomerState.Ordering:
-                popUp.SetActive(true);
+            case CustomerState.Leaving:
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    ExitPoint,
+                    movespeed * Time.deltaTime);
                 break;
             default:
                 break;
         }
+    }
+
+    public void ReceiveOrder()
+    {
+        // TODO: drop tip!
+        customerState = CustomerState.Leaving;
+        ellipses.SetActive(false);
+        GameObject gameObject = Instantiate(PrefabFactory.TipPrefab) as GameObject;
+        gameObject.transform.position = TipSpawnPoint.transform.position;
     }
 
     void UpdateTarget()
@@ -79,14 +103,25 @@ public class Customer : MonoBehaviour
         target = freeTable.gameObject.transform.position;
     }
 
-    // when recipe is clicked
     void OnMouseUpAsButton()
     {
-        if (CustomerState == CustomerState.Ordering)
+        if (customerState == CustomerState.Ordering)
         {
-            // check if you can order and send an order event
+            var oven = GetOvens()
+                .Select(o => o.GetComponent<Oven>())
+                .OrderByDescending(o => o.Speed)
+                .FirstOrDefault(o => o.Free);
+            if (oven != null)
+            {
+                oven.StartOrder(this, recipeType);
+                customerState = CustomerState.Waiting;
+                ellipses.SetActive(true);
+                popUp.SetActive(false);
+            }
         }
     }
 
     private GameObject[] GetTables() => GameObject.FindGameObjectsWithTag("Table");
+
+    private GameObject[] GetOvens() => GameObject.FindGameObjectsWithTag("Oven");
 }

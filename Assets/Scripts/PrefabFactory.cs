@@ -12,6 +12,10 @@ public class PrefabFactory : ScriptableObject
 
     public List<TablePrefab> Tables;
 
+    public List<OvenPrefab> Ovens;
+
+    public GameObject TipPrefab;
+
     [Serializable]
     public class CustomerPrefab
     {
@@ -31,5 +35,12 @@ public class PrefabFactory : ScriptableObject
     {
         public GameObject Prefab;
         public TableType TableType;
+    }
+
+    [Serializable]
+    public class OvenPrefab
+    {
+        public GameObject Prefab;
+        public OvenType OvenType;
     }
 }

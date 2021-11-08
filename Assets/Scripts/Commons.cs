@@ -36,4 +36,9 @@ namespace Commons
         A,
         B
     }
+
+    public enum OvenType
+    {
+        A
+    }
 }
