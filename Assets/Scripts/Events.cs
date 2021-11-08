@@ -32,14 +32,4 @@ namespace Events
             Amount = amount;
         }
     }
-
-    public class OrderFinished : GameEvent
-    {
-    }
-
-    public class OrderRegistered : GameEvent
-    {
-        Customer Customer;
-        RecipeType RecipeType;
-    }
 }
