@@ -1,19 +1,20 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Events;
-using EventSystem;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Tip : MonoBehaviour
 {
-    public Exchanges Exchanges;
-
     public float Movespeed = 15.0f;
 
     public float FadeoutSpeed = 6.0f;
 
-    private GameObject FadeoutTarget;
+    public TipCollectedEvent TipCollectedEvent;
+
+    private GameObject fadeoutTarget;
+
+    private GameDirector gameDirector;
 
     private bool isClicked = false;
 
@@ -24,9 +25,13 @@ public class Tip : MonoBehaviour
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        FadeoutTarget = GameObject.FindGameObjectsWithTag("Tip Target").FirstOrDefault();
-        if (FadeoutTarget == null)
-            FadeoutTarget = gameObject;
+        fadeoutTarget = GameObject.FindGameObjectsWithTag("Tip Target").FirstOrDefault();
+        if (fadeoutTarget == null)
+            fadeoutTarget = gameObject;
+        gameDirector = GameObject
+            .FindGameObjectsWithTag("Game Director")
+            .FirstOrDefault()?
+            .GetComponent<GameDirector>();
     }
 
     void Update()
@@ -42,7 +47,7 @@ public class Tip : MonoBehaviour
             }
 
             // move object towards UI
-            var direction = (transform.position - FadeoutTarget.transform.position).normalized;
+            var direction = (transform.position - fadeoutTarget.transform.position).normalized;
             var velocity = direction * Movespeed * Time.deltaTime;
             transform.position -= velocity;
 
@@ -58,7 +63,7 @@ public class Tip : MonoBehaviour
         if (!isClicked)
         {
             isClicked = true;
-            Exchanges.MoneyAddedExchange.Dispatch(new MoneyAdded(100));
+            gameDirector.AddMoney(1000);
         }
     }
 
@@ -68,3 +73,5 @@ public class Tip : MonoBehaviour
         Destroy(gameObject);
     }
 }
+
+public class TipCollectedEvent : UnityEvent<int> {}

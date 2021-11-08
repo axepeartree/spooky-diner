@@ -1,15 +1,13 @@
+using System;
 using Commons;
-using Events;
-using EventSystem;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameDirector : MonoBehaviour
 {
     public GameObject CustomerSpawnPoint;
 
     public PlayerData PlayerData;
-
-    public Exchanges Exchanges;
 
     public PrefabFactory PrefabFactory;
 
@@ -19,13 +17,17 @@ public class GameDirector : MonoBehaviour
 
     public GameObject MainCamera;
 
+    [SerializeField]
+    public LocationChangedEvent LocationChangedEvent;
+
+    [SerializeField]
+    public MoneyUpdatedEvent MoneyUpdatedEvent;
+
     void Start()
     {
         PlayerData.Reset();
-        Exchanges.LocationChangedExchange
-            .Dispatch(new LocationChanged(Location.Restaurant));
-        Exchanges.MoneyUpdatedExchange
-            .Dispatch(new MoneyUpdated(PlayerData.Money));
+
+        LocationChangedEvent.Invoke(Location.Restaurant);
 
         if (CustomerSpawnPoint == null)
             CustomerSpawnPoint = gameObject;
@@ -35,17 +37,19 @@ public class GameDirector : MonoBehaviour
         // SpawnOven(transform.position, OvenType.A);
     }
 
-    public void OnMoneyAdded(GameEvent payload)
+    public void AddMoney(int amount)
     {
-        var moneyAdded = payload as MoneyAdded;
-        PlayerData.Money += moneyAdded.Amount;
-        Exchanges.MoneyUpdatedExchange.Dispatch(new MoneyUpdated(PlayerData.Money));
+        PlayerData.Money += amount;
+        MoneyUpdatedEvent.Invoke(amount.ToString());
     }
 
-    public void OnLocationChanged(GameEvent payload)
+    public void GoToKitchen() => ChangeLocation(Location.Kitchen);
+
+    public void GoToRestaurant() => ChangeLocation(Location.Restaurant);
+
+    private void ChangeLocation(Location location)
     {
-        var locationChanged = (LocationChanged) payload;
-        switch(locationChanged.Location)
+        switch(location)
         {
             case Location.Restaurant:
                 MainCamera.transform.position =
@@ -58,11 +62,12 @@ public class GameDirector : MonoBehaviour
             default:
                 break;
         }
+        LocationChangedEvent.Invoke(location);
     }
 
-    void SpawnCustomer()
+    private void SpawnCustomer()
     {
-        var customerType = PlayerData.PotentialCustomers[Random.Range(0, PlayerData.PotentialCustomers.Count)];
+        var customerType = PlayerData.PotentialCustomers[UnityEngine.Random.Range(0, PlayerData.PotentialCustomers.Count)];
         var prefab = PrefabFactory.Customers.Find(c => c.CustomerType == customerType);
         GameObject customerObj = Instantiate(prefab.Prefab) as GameObject;
         customerObj.transform.position = CustomerSpawnPoint.transform.position;
@@ -70,17 +75,23 @@ public class GameDirector : MonoBehaviour
         customer.ExitPoint = CustomerSpawnPoint.transform.position;
     }
 
-    void SpawnTable(Vector3 position, TableType tableType)
+    private void SpawnTable(Vector3 position, TableType tableType)
     {
         var prefab = PrefabFactory.Tables.Find(t => t.TableType == tableType);
         GameObject tableObj = Instantiate(prefab.Prefab) as GameObject;
         tableObj.transform.position = position;
     }
 
-    void SpawnOven(Vector3 position, OvenType ovenType)
+    private void SpawnOven(Vector3 position, OvenType ovenType)
     {
         var prefab = PrefabFactory.Ovens.Find(t => t.OvenType == OvenType.A);
         GameObject tableObj = Instantiate(prefab.Prefab) as GameObject;
         tableObj.transform.position = position;
     }
 }
+
+[Serializable]
+public class LocationChangedEvent : UnityEvent<Location> {}
+
+[Serializable]
+public class MoneyUpdatedEvent : UnityEvent<string> {}

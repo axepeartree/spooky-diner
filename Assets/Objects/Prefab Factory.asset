@@ -15,6 +15,12 @@ MonoBehaviour:
   Customers:
   - Prefab: {fileID: 6036700794812453418, guid: cfe50a35aad520444a5f642bbca7f8bd, type: 3}
     CustomerType: 0
+  - Prefab: {fileID: 2788498305932493053, guid: 05d4ab93fd21fde45b5ddae904614b79, type: 3}
+    CustomerType: 1
+  - Prefab: {fileID: 4501686131510061114, guid: 36fb2539b23003344afe11eeb2c4faf2, type: 3}
+    CustomerType: 3
+  - Prefab: {fileID: 6061108307512234510, guid: 47a457e6fce055d4683b2864d4bb8f35, type: 3}
+    CustomerType: 2
   Recipes:
   - Prefab: {fileID: 683410075392723832, guid: fd536768a80db734b87f43ee2e54adeb, type: 3}
     RecipeType: 0
@@ -30,3 +36,4 @@ MonoBehaviour:
   Ovens:
   - Prefab: {fileID: 6954137016408058182, guid: 0fa0d9c4e0d3fe0478ab3ef965bf6319, type: 3}
     OvenType: 0
+  TipPrefab: {fileID: 4917082347942024929, guid: 8bb62f3eb23d4714099fbfacd896501c, type: 3}

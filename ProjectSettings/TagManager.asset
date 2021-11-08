@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Table
   - Oven
+  - Tip Target
+  - Game Director
   layers:
   - Default
   - TransparentFX
