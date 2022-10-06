@@ -9,9 +9,9 @@ public class GameDirector : MonoBehaviour
 
     public PlayerData PlayerData;
 
-    public PrefabFactory PrefabFactory;
-
     public GameObject RestaurantCameraPosition;
+
+    public PrefabFactory PrefabFactory;
 
     public GameObject KitchenCameraPosition;
 
